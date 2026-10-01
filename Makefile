@@ -8,6 +8,6 @@ SRC_DIRS := src
 NAME := cub3d
 
 $(NAME):
-	$(CC) $(CFLAGS) src/*.c $(LIBFT) $(LIBX) -o $(NAME)
+	$(CC) $(CFLAGS) src/*.c $(LIBFT) $(LIBX) -lXext -lX11 -lm -o $(NAME)
 
 all: $(NAME)
