@@ -3,63 +3,79 @@
 /*                                                        :::      ::::::::   */
 /*   init_window.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: manmaria <manmaria@student.42porto.com>    +#+  +:+       +#+        */
+/*   By: mafarsha <mafarsha@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/01 16:50:25 by manmaria          #+#    #+#             */
-/*   Updated: 2026/10/01 16:58:16 by manmaria         ###   ########.fr       */
+/*   Updated: 2026/10/08 19:40:00 by mafarsha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../incs/cub3d.h"
 
-int	error_exit(int fd, char *str)
+int	error_msg(char *msg)
 {
-	if (fd == -1)
-		ft_putstr_fd("File not found\n", 2);
-	else
+	ft_putstr_fd("Error\n", 2);
+	if (msg)
+		ft_putstr_fd(msg, 2);
+	return (1);
+}
+
+int	clean_exit(t_game *game)
+{
+	if (game->frame.img)
+		mlx_destroy_image(game->mlx, game->frame.img);
+	if (game->win)
+		mlx_destroy_window(game->mlx, game->win);
+	if (game->mlx)
 	{
-		if (str)
-			ft_putstr_fd(str, 2);
-		if (fd > -1)
-			close (fd);
+		mlx_destroy_display(game->mlx);
+		free(game->mlx);
 	}
+	exit(0);
 	return (0);
 }
 
-void	my_mlx_pixel_put(t_data *data, int x, int y, int color)
+int	key_press(int keycode, t_game *game)
 {
-	char	*dst;
-
-	dst = data->addr + (y * data->line_length + x * (data->bpp / 8));
-	*(unsigned int *)dst = color;
+	if (keycode == KEY_ESC)
+		clean_exit(game);
+	return (0);
 }
 
-void	init_window(t_data	*data)
+void	init_window(t_game *game)
 {
-	data->mlx = mlx_init();
-	if (!data->mlx)
-		exit(error_exit(-2, "Could not initialize MLX\n"));
-	data->mlx_win = mlx_new_window(data->mlx, IMG_WIDTH, IMG_HEIGHT,
-			"FdF - manmaria");
-	if (!data->mlx_win)
-		exit(error_exit(-2, "Could not create MLX Window\n"));
-	data->img = mlx_new_image(data->mlx, IMG_WIDTH, IMG_HEIGHT);
-	if (!data->img)
-		exit(error_exit(-2, "Could not create MLX Image"));
-	data->addr = mlx_get_data_addr(data->img, &data->bpp,
-			&data->line_length, &data->endian);
-	if (!data->addr)
-		exit(error_exit(-2, "Could not get MLX Data Address"));
+	game->mlx = mlx_init();
+	if (!game->mlx)
+	{
+		error_msg("Could not initialize MLX\n");
+		exit(1);
+	}
+	game->win = mlx_new_window(game->mlx, WIN_WIDTH, WIN_HEIGHT, WIN_TITLE);
+	if (!game->win)
+		clean_exit(game);
+	game->frame.img = mlx_new_image(game->mlx, WIN_WIDTH, WIN_HEIGHT);
+	if (!game->frame.img)
+		clean_exit(game);
+	game->frame.addr = mlx_get_data_addr(game->frame.img,
+			&game->frame.bpp, &game->frame.line_len, &game->frame.endian);
+	if (!game->frame.addr)
+		clean_exit(game);
 }
 
 int	main(int ac, char **av)
 {
-	
-	t_data	data;
+	t_game	game;
 
-	(void)ac;
+	if (ac != 2)
+	{
+		error_msg("Usage: ./cub3d <map.cub>\n");
+		return (1);
+	}
 	(void)av;
-
-	ft_bzero(&data, sizeof(t_data));
-	init_window(&data);
+	ft_bzero(&game, sizeof(t_game));
+	init_window(&game);
+	mlx_hook(game.win, ON_DESTROY, 0, clean_exit, &game);
+	mlx_hook(game.win, ON_KEYDOWN, 1L << 0, key_press, &game);
+	mlx_loop(game.mlx);
+	return (0);
 }
