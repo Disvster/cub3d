@@ -22,6 +22,7 @@ int	error_msg(char *msg)
 
 int	clean_exit(t_game *game)
 {
+	free_map_data(&game->map);
 	if (game->frame.img)
 		mlx_destroy_image(game->mlx, game->frame.img);
 	if (game->win)
@@ -71,8 +72,9 @@ int	main(int ac, char **av)
 		error_msg("Usage: ./cub3d <map.cub>\n");
 		return (1);
 	}
-	(void)av;
 	ft_bzero(&game, sizeof(t_game));
+	if (!parse_cub(&game, av[1]))
+		return (1);
 	init_window(&game);
 	mlx_hook(game.win, ON_DESTROY, 0, clean_exit, &game);
 	mlx_hook(game.win, ON_KEYDOWN, 1L << 0, key_press, &game);

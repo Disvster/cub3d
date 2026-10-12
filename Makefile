@@ -24,7 +24,10 @@ MLX_FLAGS   := -L$(MLX_DIR) -lmlx -lXext -lX11 -lm
 SRCS_DIR    := src
 OBJS_DIR    := objs
 
-SRCS        := $(SRCS_DIR)/init_window.c
+SRCS        := $(SRCS_DIR)/init_window.c \
+               $(SRCS_DIR)/parsing/parse_file.c \
+               $(SRCS_DIR)/parsing/parse_utils.c \
+               $(SRCS_DIR)/parsing/parse_main.c
 
 OBJS        := $(SRCS:$(SRCS_DIR)/%.c=$(OBJS_DIR)/%.o)
 
@@ -33,7 +36,8 @@ all: $(NAME)
 $(NAME): $(LIBFT) $(MLX) $(OBJS)
 	$(CC) $(CFLAGS) $(OBJS) $(LIBFT) $(MLX_FLAGS) -o $(NAME)
 
-$(OBJS_DIR)/%.o: $(SRCS_DIR)/%.c incs/cub3d.h | $(OBJS_DIR)
+$(OBJS_DIR)/%.o: $(SRCS_DIR)/%.c incs/cub3d.h
+	@mkdir -p $(dir $@)
 	$(CC) $(CFLAGS) -c $< -o $@
 
 $(OBJS_DIR):
