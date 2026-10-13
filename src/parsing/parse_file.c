@@ -46,35 +46,7 @@ int	open_cub_file(char *path)
 	return (fd);
 }
 
-int	read_raw_lines(int fd, t_list **raw)
-{
-	char	*line;
-	t_list	*node;
-
-	line = get_next_line(fd);
-	while (line)
-	{
-		node = ft_lstnew(line);
-		if (!node)
-		{
-			free(line);
-			ft_lstclear(raw, free);
-			close(fd);
-			return (0);
-		}
-		ft_lstadd_back(raw, node);
-		line = get_next_line(fd);
-	}
-	close(fd);
-	if (!*raw)
-	{
-		error_msg("Map file is empty\n");
-		return (0);
-	}
-	return (1);
-}
-
-static int	add_line_copy(t_list **list, char *line)
+static int	append_line(t_list **list, char *line)
 {
 	char	*dup;
 	t_list	*node;
@@ -92,6 +64,14 @@ static int	add_line_copy(t_list **list, char *line)
 	return (1);
 }
 
+static int	classify_line(char *line, int *in_map, t_list **cfg, t_list **map)
+{
+	if (!*in_map && is_config_identifier(line))
+		return (append_line(cfg, line));
+	*in_map = 1;
+	return (append_line(map, line));
+}
+
 int	split_lines(t_list *raw, t_list **configs, t_list **map)
 {
 	int		in_map;
@@ -105,19 +85,11 @@ int	split_lines(t_list *raw, t_list **configs, t_list **map)
 		line = (char *)raw->content;
 		if (in_map && is_empty_line(line))
 			map_ended = 1;
-		else if (is_empty_line(line))
-			;
-		else if (map_ended)
+		else if (map_ended && !is_empty_line(line))
 			return (error_msg("Invalid line inside or after map\n"), 0);
-		else if (!in_map && is_config_identifier(line))
+		else if (!is_empty_line(line))
 		{
-			if (!add_line_copy(configs, line))
-				return (0);
-		}
-		else
-		{
-			in_map = 1;
-			if (!add_line_copy(map, line))
+			if (!classify_line(line, &in_map, configs, map))
 				return (0);
 		}
 		raw = raw->next;

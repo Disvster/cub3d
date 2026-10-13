@@ -12,6 +12,56 @@
 
 #include "../../incs/cub3d.h"
 
+int	read_raw_lines(int fd, t_list **raw)
+{
+	char	*line;
+	t_list	*node;
+
+	line = get_next_line(fd);
+	while (line)
+	{
+		node = ft_lstnew(line);
+		if (!node)
+		{
+			free(line);
+			ft_lstclear(raw, free);
+			close(fd);
+			return (0);
+		}
+		ft_lstadd_back(raw, node);
+		line = get_next_line(fd);
+	}
+	close(fd);
+	if (!*raw)
+		return (error_msg("Map file is empty\n"), 0);
+	return (1);
+}
+
+static int	validate_splits(t_list *configs, t_list *map_lines)
+{
+	if (!configs)
+	{
+		error_msg("Missing configuration elements\n");
+		return (0);
+	}
+	if (!map_lines)
+	{
+		error_msg("Missing map content\n");
+		return (0);
+	}
+	return (1);
+}
+
+static void	free_lists(t_list **raw, t_list **cfg, t_list **map)
+{
+	if (raw && *raw)
+		ft_lstclear(raw, free);
+	if (cfg && *cfg)
+		ft_lstclear(cfg, free);
+	if (map && *map)
+		ft_lstclear(map, free);
+}
+
 int	parse_cub(t_game *game, char *path)
 {
 	int		fd;
@@ -27,16 +77,13 @@ int	parse_cub(t_game *game, char *path)
 		return (0);
 	if (!read_raw_lines(fd, &raw))
 		return (0);
-	if (!split_lines(raw, &configs, &map_lines))
+	if (!split_lines(raw, &configs, &map_lines)
+		|| !validate_splits(configs, map_lines))
 	{
-		ft_lstclear(&raw, free);
-		ft_lstclear(&configs, free);
-		ft_lstclear(&map_lines, free);
+		free_lists(&raw, &configs, &map_lines);
 		return (0);
 	}
-	ft_lstclear(&raw, free);
-	ft_lstclear(&configs, free);
-	ft_lstclear(&map_lines, free);
+	free_lists(&raw, &configs, &map_lines);
 	(void)game;
 	return (1);
 }

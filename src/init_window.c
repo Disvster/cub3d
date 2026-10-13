@@ -75,6 +75,7 @@ int	main(int ac, char **av)
 	ft_bzero(&game, sizeof(t_game));
 	if (!parse_cub(&game, av[1]))
 		return (1);
+	ft_putstr_fd("PARSE-01 Success: File read and lines split cleanly!\n", 1);
 	init_window(&game);
 	mlx_hook(game.win, ON_DESTROY, 0, clean_exit, &game);
 	mlx_hook(game.win, ON_KEYDOWN, 1L << 0, key_press, &game);
