@@ -4,3 +4,4 @@ static char *north_xpm[] = {
 "  c #FF0000",
 " "
 };
+
