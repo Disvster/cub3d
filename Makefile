@@ -27,6 +27,8 @@ OBJS_DIR    := objs
 SRCS        := $(SRCS_DIR)/init_window.c \
                $(SRCS_DIR)/parsing/parse_file.c \
                $(SRCS_DIR)/parsing/parse_utils.c \
+               $(SRCS_DIR)/parsing/parse_textures.c \
+               $(SRCS_DIR)/parsing/parse_colors.c \
                $(SRCS_DIR)/parsing/parse_main.c
 
 OBJS        := $(SRCS:$(SRCS_DIR)/%.c=$(OBJS_DIR)/%.o)

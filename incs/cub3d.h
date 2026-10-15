@@ -110,4 +110,10 @@ int		is_map_line(char *line);
 void	free_array(char **arr);
 void	free_map_data(t_map *map);
 
+/* Texture and Color prototypes */
+int		parse_texture_line(t_map *map, char *line);
+int		check_textures_complete(t_map *map);
+int		parse_color_line(t_map *map, char *line);
+int		check_colors_complete(t_map *map);
+
 #endif

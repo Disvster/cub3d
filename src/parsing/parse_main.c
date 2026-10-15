@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: mafarsha <mafarsha@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/10/9 22:35:00 by mafarsha          #+#    #+#             */
-/*   Updated: 2026/10/22 22:22:26 by mafarsha         ###   ########.fr       */
+/*   Created: 2026/10/14 17:10:00 by mafarsha          #+#    #+#             */
+/*   Updated: 2026/10/15 18:30:00 by mafarsha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,6 +62,34 @@ static void	free_lists(t_list **raw, t_list **cfg, t_list **map)
 		ft_lstclear(map, free);
 }
 
+static int	parse_all_configs(t_map *map, t_list *configs)
+{
+	char	*line;
+	int		res;
+
+	map->floor_color = -1;
+	map->ceiling_color = -1;
+	while (configs)
+	{
+		line = (char *)configs->content;
+		res = parse_texture_line(map, line);
+		if (res == 0)
+			return (0);
+		if (res == -1)
+		{
+			res = parse_color_line(map, line);
+			if (res == 0)
+				return (0);
+			if (res == -1)
+				return (error_msg("Unknown configuration element\n"), 0);
+		}
+		configs = configs->next;
+	}
+	if (!check_textures_complete(map) || !check_colors_complete(map))
+		return (0);
+	return (1);
+}
+
 int	parse_cub(t_game *game, char *path)
 {
 	int		fd;
@@ -78,12 +106,13 @@ int	parse_cub(t_game *game, char *path)
 	if (!read_raw_lines(fd, &raw))
 		return (0);
 	if (!split_lines(raw, &configs, &map_lines)
-		|| !validate_splits(configs, map_lines))
+		|| !validate_splits(configs, map_lines)
+		|| !parse_all_configs(&game->map, configs))
 	{
 		free_lists(&raw, &configs, &map_lines);
+		free_map_data(&game->map);
 		return (0);
 	}
 	free_lists(&raw, &configs, &map_lines);
-	(void)game;
 	return (1);
 }
