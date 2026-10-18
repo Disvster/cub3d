@@ -107,7 +107,8 @@ int	parse_cub(t_game *game, char *path)
 		return (0);
 	if (!split_lines(raw, &configs, &map_lines)
 		|| !validate_splits(configs, map_lines)
-		|| !parse_all_configs(&game->map, configs))
+		|| !parse_all_configs(&game->map, configs)
+		|| !parse_map_grid(game, map_lines))
 	{
 		free_lists(&raw, &configs, &map_lines);
 		free_map_data(&game->map);

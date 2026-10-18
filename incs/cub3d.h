@@ -116,4 +116,7 @@ int		check_textures_complete(t_map *map);
 int		parse_color_line(t_map *map, char *line);
 int		check_colors_complete(t_map *map);
 
+/* Map grid prototypes */
+int		parse_map_grid(t_game *game, t_list *map_lines);
+
 #endif
