@@ -118,5 +118,6 @@ int		check_colors_complete(t_map *map);
 
 /* Map grid prototypes */
 int		parse_map_grid(t_game *game, t_list *map_lines);
+int		check_map_enclosed(t_map *map);
 
 #endif

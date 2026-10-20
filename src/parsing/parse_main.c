@@ -6,7 +6,7 @@
 /*   By: mafarsha <mafarsha@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/14 17:10:00 by mafarsha          #+#    #+#             */
-/*   Updated: 2026/10/15 18:30:00 by mafarsha         ###   ########.fr       */
+/*   Updated: 2026/10/20 17:15:00 by mafarsha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,21 +34,6 @@ int	read_raw_lines(int fd, t_list **raw)
 	close(fd);
 	if (!*raw)
 		return (error_msg("Map file is empty\n"), 0);
-	return (1);
-}
-
-static int	validate_splits(t_list *configs, t_list *map_lines)
-{
-	if (!configs)
-	{
-		error_msg("Missing configuration elements\n");
-		return (0);
-	}
-	if (!map_lines)
-	{
-		error_msg("Missing map content\n");
-		return (0);
-	}
 	return (1);
 }
 
@@ -101,14 +86,12 @@ int	parse_cub(t_game *game, char *path)
 	configs = NULL;
 	map_lines = NULL;
 	fd = open_cub_file(path);
-	if (fd < 0)
-		return (0);
-	if (!read_raw_lines(fd, &raw))
+	if (fd < 0 || !read_raw_lines(fd, &raw))
 		return (0);
 	if (!split_lines(raw, &configs, &map_lines)
-		|| !validate_splits(configs, map_lines)
 		|| !parse_all_configs(&game->map, configs)
-		|| !parse_map_grid(game, map_lines))
+		|| !parse_map_grid(game, map_lines)
+		|| !check_map_enclosed(&game->map))
 	{
 		free_lists(&raw, &configs, &map_lines);
 		free_map_data(&game->map);

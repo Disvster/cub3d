@@ -87,12 +87,12 @@ int	split_lines(t_list *raw, t_list **configs, t_list **map)
 			map_ended = 1;
 		else if (map_ended && !is_empty_line(line))
 			return (error_msg("Invalid line inside or after map\n"), 0);
-		else if (!is_empty_line(line))
-		{
-			if (!classify_line(line, &in_map, configs, map))
-				return (0);
-		}
+		else if (!is_empty_line(line)
+			&& !classify_line(line, &in_map, configs, map))
+			return (0);
 		raw = raw->next;
 	}
+	if (!*configs || !*map)
+		return (error_msg("Missing configuration or map content\n"), 0);
 	return (1);
 }
