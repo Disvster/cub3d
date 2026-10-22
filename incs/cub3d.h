@@ -96,4 +96,18 @@ int		clean_exit(t_game *game);
 int		error_msg(char *msg);
 void	init_window(t_game *game);
 
+/* Parsing prototypes */
+int		check_cub_extension(char *path);
+int		open_cub_file(char *path);
+int		read_raw_lines(int fd, t_list **raw);
+int		split_lines(t_list *raw, t_list **configs, t_list **map);
+int		parse_cub(t_game *game, char *path);
+
+/* Parsing utility prototypes */
+int		is_empty_line(char *line);
+int		is_config_identifier(char *line);
+int		is_map_line(char *line);
+void	free_array(char **arr);
+void	free_map_data(t_map *map);
+
 #endif
