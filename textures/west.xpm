@@ -1,0 +1,7 @@
+/* XPM */
+static char *west_xpm[] = {
+"1 1 1 1",
+"  c #0000FF",
+" "
+};
+
