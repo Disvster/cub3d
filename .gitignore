@@ -1,4 +1,18 @@
+# Binaries & libraries
+cub3d
+*.a
+libft/libft.a
+minilibx-linux/libmlx.a
+minilibx-linux/libmlx_Linux.a
+minilibx-linux/test/mlx-test
+
+# Objects & build directories
+objs/
 */obj/
 *.o
 *.out
-*.a
+*.gch
+
+# Editor & OS files
+.vscode/
+.DS_Store
