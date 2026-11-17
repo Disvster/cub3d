@@ -36,4 +36,5 @@ typedef struct s_ray
 	int		draw_end;			/* Screen Y where wall slice ends */
 }				t_ray;
 
+
 #endif

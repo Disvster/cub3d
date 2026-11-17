@@ -20,8 +20,11 @@
 # include <math.h>
 # include <X11/keysym.h>
 # include <X11/X.h>
+
 # include "../libft/incs/libft.h"
 # include "../minilibx-linux/mlx.h"
+# include "engine.h"
+
 /* Window settings */
 # define WIN_WIDTH	1280
 # define WIN_HEIGHT	720
@@ -119,5 +122,7 @@ int		check_colors_complete(t_map *map);
 /* Map grid prototypes */
 int		parse_map_grid(t_game *game, t_list *map_lines);
 int		check_map_enclosed(t_map *map);
+
+int	cast_rays(t_game *game);
 
 #endif

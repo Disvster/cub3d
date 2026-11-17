@@ -31,7 +31,8 @@ SRCS        := $(SRCS_DIR)/init_window.c \
                $(SRCS_DIR)/parsing/parse_colors.c \
                $(SRCS_DIR)/parsing/parse_map.c \
                $(SRCS_DIR)/parsing/parse_walls.c \
-               $(SRCS_DIR)/parsing/parse_main.c
+               $(SRCS_DIR)/parsing/parse_main.c \
+               $(SRCS_DIR)/engine/ray_cast.c
 
 OBJS        := $(SRCS:$(SRCS_DIR)/%.c=$(OBJS_DIR)/%.o)
 

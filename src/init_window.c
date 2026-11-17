@@ -77,6 +77,7 @@ int	main(int ac, char **av)
 		return (1);
 	ft_putstr_fd("PARSE-01 Success: File read and lines split cleanly!\n", 1);
 	init_window(&game);
+	cast_rays(&game);
 	mlx_hook(game.win, ON_DESTROY, 0, clean_exit, &game);
 	mlx_hook(game.win, ON_KEYDOWN, 1L << 0, key_press, &game);
 	mlx_loop(game.mlx);

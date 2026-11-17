@@ -79,6 +79,8 @@ void	perform_dda(t_game *game, t_ray *ray)
 			ray->side = 1;
 		}
 		//check_collision(ray, game);
+		if (game->map.grid[ray->map_y][ray->map_x] == '1')
+			ray->hit = true;
 		if (!ray->hit)// && ray->is_door)
 			continue ;
 	}
@@ -88,13 +90,48 @@ void	perform_dda(t_game *game, t_ray *ray)
 		ray->perp_wall_dist = ray->side_dist_y - ray->delta_dist_y;
 }
 
+void	put_pixel(t_img *img, int x, int y, int color)
+{
+	char	*dst;
+
+	if (x < 0 || x >= WIN_WIDTH || y < 0 || y >= WIN_HEIGHT)
+		return ;
+	dst = img->addr + (y * img->line_len + x * (img->bpp / 8));
+	*(unsigned int *)dst = color;
+	// NOTE:
+	//    • y * img->line_len: Moves the pointer down y rows of pixels.
+    //    • x * (img->bpp / 8): Moves x pixels across the row (bpp / 8 = 4 bytes per pixel in 32-bit color).
+	//    • *(unsigned int *)dst = color: Writes the 4-byte hex color (0xRRGGBB).
+}
+
 void	draw_column(t_game *game, t_ray *ray, int x)
 {
 	int	y;
+	int	wall_color;
 
+	if (ray->side == 1)
+		wall_color = 0x880000;
+	else
+		wall_color = 0xFF0000;
 	y = -1;
-	while (y < WIN_HEIGHT)
+	while (++y < WIN_HEIGHT)
 	{
+		if (y < ray->draw_start)
+			put_pixel(&game->frame, x, y, game->map.ceiling_color);
+		else if (y <= ray->draw_end)
+			put_pixel(&game->frame, x, y, wall_color);
+		else
+			put_pixel(&game->frame, x, y, game->map.floor_color);
+	}
+	//NOTE:
+	//Alternative: 3 sequential loops
+  // │ You can also split it into three separate while-loops:
+  // │
+  // │ 1. while (y < ray->draw_start) → draw ceiling.
+  // │ 2. while (y <= ray->draw_end) → draw wall.
+  // │ 3. while (y < WIN_HEIGHT) → draw floor.
+  // │
+  // │ This avoids checking if / else if / else on every single pixel.
 	  //  TODO:
 	  // • Draw pixels from y = 0 to WIN_HEIGHT - 1:
 	  //    • If y < ray->draw_start: put game->map.ceiling_color.
@@ -102,7 +139,6 @@ void	draw_column(t_game *game, t_ray *ray, int x)
 	  //        • Put a wall color. (E.g., 0xFF0000 if side == 0, 
 		//        and a darker 0x880000 if side == 1 to create shading!).
 	  //    • If y > ray->draw_end: put game->map.floor_color.
-	}
 }
 
 int	cast_rays(t_game *game)
@@ -122,3 +158,5 @@ int	cast_rays(t_game *game)
 	mlx_put_image_to_window(game->mlx, game->win, game->frame.img, 0, 0);
 	return (0);
 }
+// Resume with -c (or command below):
+// agy --conversation=064daf8d-9a8a-4ab2-a385-5fb6bb2240
